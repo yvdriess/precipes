@@ -31,3 +31,11 @@ Put put the following reference files in their respective directories, or use sy
 Be warned that 32 samples run with only one worker on one compute node runs for nearly a week!
 
 Alternatively, you can provide your own fastq.gz read files in `data/exome`, provided you modify `exome_sample_list.txt`.
+
+### Execution
+```Usage: run_exome_experiment [options] <pipeline_cfg>  
+Drives the run_pipeline.sh script to run the exome experiment. Execution logs and running times are generated in .log and .times files.
+	Options: 	(-n num_nodes)
+				(-w num_workers) 
+				(-s num_samples)
+				(-h)					: print this usage information```
