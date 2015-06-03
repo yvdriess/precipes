@@ -33,9 +33,15 @@ Be warned that 32 samples run with only one worker on one compute node runs for 
 Alternatively, you can provide your own fastq.gz read files in `data/exome`, provided you modify `exome_sample_list.txt`.
 
 ### Execution
-```Usage: run_exome_experiment [options] <pipeline_cfg>  
+  - `./run_exome_experiment.sh -s 2 -w 2 exome_best_practices_pipeline.json` : Executes the best practices pipeline for the first two samples using two workers.
+  - For cluster or cloud environment execution, adapt setenv.sh (cfr. setenv_lynx.sh) and pass the number of nodes to the above start script with `-n`
+  - The more workers, the more analysis tools can be run on one nodes simultaniously. Take into account resources when using a lot of workers: 8 workers means possibly 8 concurrent java VMs running GATK.
+
+```
+Usage: run_exome_experiment [options] <pipeline_cfg>  
 Drives the run_pipeline.sh script to run the exome experiment. Execution logs and running times are generated in .log and .times files.
 	Options: 	(-n num_nodes)
 				(-w num_workers) 
 				(-s num_samples)
-				(-h)					: print this usage information```
+				(-h)					: print this usage information
+```
