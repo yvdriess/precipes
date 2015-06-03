@@ -28,6 +28,7 @@ Notice:
   - run 'make'
 
 ### Running
-  `./precipes samples/hello_world.json world foo bar baz`
-  
+  - `./precipes samples/hello_world.json world`
+  - `./precipes samples/test_pipeline.json foo bar baz`
+
   See `samples/exome` for a much more involved example running the best-practices exome pipeline.
