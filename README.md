@@ -32,3 +32,6 @@ Notice:
   - `./precipes samples/test_pipeline.json foo bar baz`
 
   See `samples/exome` for a much more involved example running the best-practices exome pipeline.
+
+### Parallel Recipe
+*TODO: explain the simple json recipe format*
