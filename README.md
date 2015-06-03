@@ -29,3 +29,5 @@ Notice:
 
 ### Running
   ./precipes samples/hello_world.json world foo bar baz
+  
+  See samples/exome for a much more involved example running the best-practices exome pipeline.
