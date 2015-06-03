@@ -1,0 +1,11 @@
+{ "stages" : {
+	"hello" : {
+		"command" : "echo -n 'hello '",
+		"out" : "hello_done"
+	},
+	"print_name" : {
+		"command" : "echo {}",
+		"in" : "hello_done"
+	}
+  }
+}

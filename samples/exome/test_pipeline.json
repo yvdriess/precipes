@@ -1,0 +1,15 @@
+{ "stages" : {
+    "first" : {
+		"command" : "echo Is this first for {}?",
+		"out" : "first_finished"
+    },
+    "second" : {
+		"command" : "echo Is this second for {}?",
+		"out" : "second_finished"
+    },
+    "third" : {
+		"command" : "echo I know third for {} will always be last.",
+		"in" : ["first_finished", "second_finished"]
+    }
+  }
+}

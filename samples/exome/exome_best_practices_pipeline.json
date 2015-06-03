@@ -1,0 +1,107 @@
+// Copyright 2015 Yves Vandriessche, Charlotte Herzeel
+// 
+{ "stages" : {
+    "check_paired" : {
+        "command" : "$CHECK_EXISTS $READS/{}_1.filt.fastq.gz",
+        "out" : "has_paired_end_reads"
+    },
+    "check_no_paired" : {
+        "command" : "$CHECK_NOT_EXISTS $READS/{}_1.filt.fastq.gz",
+        "out" : "no_paired_end_reads"
+    },
+    "check_no_unpaired" : {
+        "command" : "$CHECK_NOT_EXISTS $READS/{}.filt.fastq.gz",
+        "out" : "no_unpaired_end_reads"
+    },
+    "fetch_unpaired" : {
+        "command" : "$FETCH $READS/{}.filt.fastq.gz $LOCAL_DIR/{}.unpaired.fastq.gz",
+        "out" : "unpaired.fastq.gz"
+    },
+    "fetch_paired_1" : {
+        "command" : "$FETCH $READS/{}_1.filt.fastq.gz $LOCAL_DIR/{}.paired_1.fastq.gz",
+        "in" : "has_paired_end_reads",
+        "out" : "paired_1.fastq.gz"
+    },
+    "fetch_paired_2" : {
+        "command" : "$FETCH $READS/{}_2.filt.fastq.gz $LOCAL_DIR/{}.paired_2.fastq.gz",
+        "in" : "has_paired_end_reads",
+        "out" : "paired_2.fastq.gz"
+    },
+    "alignment_unpaired" : {
+        "command" : " $BWA mem -R '@RG\\tID:Group1\\tLB:lib1\\tPL:illumina\\tSM:sample1' -t $NUM_THREADS $REF/ucsc.hg19.fasta $LOCAL_DIR/{}.unpaired.fastq.gz > $LOCAL_DIR/{}.unpaired.sam && rm $LOCAL_DIR/{}.unpaired.fastq.gz",
+        "in"  : "unpaired.fastq.gz",
+        "out" : "unpaired.sam"
+    },
+    "alignment_paired" : {
+        "command" : " $BWA mem -R '@RG\\tID:Group1\\tLB:lib1\\tPL:illumina\\tSM:sample1' -t $NUM_THREADS $REF/ucsc.hg19.fasta $LOCAL_DIR/{}.paired_1.fastq.gz $LOCAL_DIR/{}.paired_2.fastq.gz > $LOCAL_DIR/{}.paired.sam && rm $LOCAL_DIR/{}.paired_1.fastq.gz $LOCAL_DIR/{}.paired_2.fastq.gz",
+        "in"  : ["paired_1.fastq.gz", "paired_2.fastq.gz"],
+        "out" : "paired.sam"
+    },
+    "sort_for_coordinate_order_paired" : {
+        "command" : " java -jar $PICARDTOOLS/SortSam.jar I=$LOCAL_DIR/{}.paired.sam O=$LOCAL_DIR/{}.sorted_paired.bam SO=coordinate && rm $LOCAL_DIR/{}.paired.sam ",
+        "in"  : "paired.sam",
+        "out" : "sorted_paired.bam"
+    },
+    "sort_for_coordinate_order_unpaired" : {
+        "command" : " java -jar $PICARDTOOLS/SortSam.jar I=$LOCAL_DIR/{}.unpaired.sam O=$LOCAL_DIR/{}.sorted_unpaired.bam SO=coordinate && rm $LOCAL_DIR/{}.unpaired.sam ",
+        "in"  : "unpaired.sam",
+        "out" : "sorted_unpaired.bam"
+    },
+    "merge_bams_paired_unpaired" : {
+	"command" : " java -jar $PICARDTOOLS/MergeSamFiles.jar I=$LOCAL_DIR/{}.sorted_unpaired.bam I=$LOCAL_DIR/{}.sorted_paired.bam O=$LOCAL_DIR/{}.sorted.bam SO=coordinate && rm $LOCAL_DIR/{}.sorted_paired.bam && rm $LOCAL_DIR/{}.sorted_unpaired.bam ",
+	"in" : ["sorted_paired.bam", "sorted_unpaired.bam"],
+	"out" : "sorted.bam"
+    },
+    "merge_bams_unpaired" : {
+	"command" : "mv $LOCAL_DIR/{}.sorted_unpaired.bam $LOCAL_DIR/{}.sorted.bam",
+	"in" : ["sorted_unpaired.bam", "no_paired_end_reads"],
+	"out" : "sorted.bam"
+    },
+    "merge_bams_paired" : {
+	"command" : "mv $LOCAL_DIR/{}.sorted_paired.bam $LOCAL_DIR/{}.sorted.bam",
+	"in" : ["sorted_paired.bam", "no_unpaired_end_reads"],
+	"out" : "sorted.bam"
+    },
+    "remove_duplicates" : {
+        "command" : " java -jar $PICARDTOOLS/MarkDuplicates.jar I=$LOCAL_DIR/{}.sorted.bam O=$LOCAL_DIR/{}.dedup.bam M=$LOCAL_DIR/{}.picard-duplicates && rm $LOCAL_DIR/{}.sorted.bam ",
+        "in"  : "sorted.bam",
+        "out" : "dedup.bam"
+    },
+    "build_bam_index_1" : {  // implicitely creates a bam index file (bai)
+        "command" : " java -jar $PICARDTOOLS/BuildBamIndex.jar I=$LOCAL_DIR/{}.dedup.bam VALIDATION_STRINGENCY=SILENT",
+        "in"  : "dedup.bam",
+        "out" : "dedup.bai"
+    },
+    "realign_around_indels_1" : {
+        "command" : " java -Xmx2g -jar $GATK/GenomeAnalysisTK.jar -T RealignerTargetCreator -R $REF/ucsc.hg19.fasta -I $LOCAL_DIR/{}.dedup.bam -o $LOCAL_DIR/{}.intervals ",
+        "in"  : ["dedup.bam", "dedup.bai"], // also reads hg19m bai1 input is implicit (assumes it's there)
+        "out" : "intervals"
+    },
+    "realign_around_indels_2" : {
+        "command" : " java -jar $GATK/GenomeAnalysisTK.jar -T IndelRealigner -R $REF/ucsc.hg19.fasta -I $LOCAL_DIR/{}.dedup.bam -targetIntervals $LOCAL_DIR/{}.intervals -o $LOCAL_DIR/{}.7.bam && rm $LOCAL_DIR/{}.dedup.* $LOCAL_DIR/{}.intervals ",
+        "in"  : ["dedup.bam", "dedup.bai", "intervals"],
+        "out" : "7.bam"
+    },
+    "build_bam_index_2" : {
+        "command" : " java -jar $PICARDTOOLS/BuildBamIndex.jar I=$LOCAL_DIR/{}.7.bam VALIDATION_STRINGENCY=SILENT",
+        "in"  : "7.bam",
+        "out" : "7.bai"
+    },
+    "base_recalibrate_1" : {
+        "command" : " java -jar $GATK/GenomeAnalysisTK.jar -T BaseRecalibrator -R $REF/ucsc.hg19.fasta -I $LOCAL_DIR/{}.7.bam -knownSites $KNOWN_SITES/dbsnp_137.hg19.vcf -knownSites $KNOWN_SITES/Mills_and_1000G_gold_standard.indels.hg19.vcf -o $LOCAL_DIR/{}.recal",
+        "in"  : ["7.bam", "7.bai"], // also reads hg19 and bsnp
+        "out" : "recal"
+    },
+    "base_recalibrate_2" : {
+        "command" : " java -jar $GATK/GenomeAnalysisTK.jar -T PrintReads -R $REF/ucsc.hg19.fasta -I $LOCAL_DIR/{}.7.bam -BQSR $LOCAL_DIR/{}.recal -o $LOCAL_DIR/{}.8.bam && rm $LOCAL_DIR/{}.7.* $LOCAL_DIR/{}.recal ",
+        "in"  : ["7.bam", "7.bai", "recal"], // also reads hg19
+        "out" : ["8.bam", "8.bai"]
+    },
+    "call_variants" : {
+        "command" : " java -jar $GATK/GenomeAnalysisTK.jar -T HaplotypeCaller -R $REF/ucsc.hg19.fasta -I $LOCAL_DIR/{}.8.bam -o $LOCAL_DIR/{}.vcf && rm $LOCAL_DIR/{}.8.* ",
+        "in"  : ["8.bam", "8.bai"], // also reads hg19
+        "out" : ["vcf", "vcfinocx"]
+    }
+}
+}
+

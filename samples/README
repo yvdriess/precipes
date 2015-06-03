@@ -1,0 +1,6 @@
+This directory contains several example recipes.
+
+- hello_world.json : a small trivial example, which simply echoes "hello <run_name>" for each given run
+- exome : reference best practices exome sequencing pipeline
+  		This exome parallel recipe is portable and works both on a shared-memory workstation, a cluster and Amazon ec2 nodes. Sadly, the configuration scripts to get the experiments up and running are not portable. More portable experiment scripts are underway. Best practices pipeline recipe is based on the pipeline description in:
+  		  G. A. Van der Auwera, M. O. Carneiro, C. Hartl, R. Poplin, G. del Angel, A. Levy-Moonshine, T. Jordan, K. Shakir, D. Roazen, J. Thibault, E. Banks, K. V. Garimella, D. Altshuler, S. Gabriel, and M. A. DePristo, From FastQ Data to High-Confidence Variant Calls: The Genome Analysis Toolkit Best Practices Pipeline. Hoboken, NJ, USA: John Wiley & Sons, Inc., 2002, pp. 11.10.1–11.10.33.
