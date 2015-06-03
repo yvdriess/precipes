@@ -26,6 +26,6 @@ Put put the following reference files in their respective directories, or use sy
 
 *Input Files*
   - 1000Genome NA12878 (phase 3) fastq.gz files in: `data/exome`
-  - 
+
 `exome_sample_list.txt` contains a list of all sample names considered in the `run_exome_experiment.sh` script. If you have the space (557GB) you can fetch the entire list from `wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/NA12878/sequence_read/`. Typically you will want to run only run a handful of exome samples, passing `-s 32` to `run_exome_experiment.sh` will run the first 32 samples in `exome_sample_list.txt` in parallel. You can thus make due with only fetching the necessary read files.
 Be warned that 32 samples run with only one worker on one compute node runs for nearly a week!
