@@ -1,7 +1,7 @@
 # precipes
 Parallel Recipes : massively parallel and distributed workflows made easy
 
-**Caveat Programmer: This is a first demonstrator version which will be very soon obsolete. A rework and cleanup pass is underway, pending a stable release.**
+**Caveat Programmer: This is a first demonstrator version. A rework and cleanup pass is underway, pending a stable release.**
 
 Key features:
   - Write down a workflow or pipeline in a simple declarative json script. For each stage you only specify a bash command string, input names and output names.
