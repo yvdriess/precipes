@@ -83,7 +83,7 @@ Drives the run_pipeline.sh script to run the exome experiment. Execution logs an
 	# 	exit $E_OPTERROR;
 	# fi
 	shift $((OPTIND-1))
-	export PIPELINE_CFG=${1:? ERROR no pipeline config file specified. $(print_usage_string)}
+	export PIPELINE_CFG=${1:-? ERROR no pipeline config file specified. $(print_usage_string)}
 	# remove all arguments (avoids polluting scripts down the line)
 	shift $(($#))
 
