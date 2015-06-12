@@ -95,6 +95,7 @@ public:
 
   std::ostream & cnc_format( std::ostream & os ) const {
     os << "file://" << m_localPath << m_name << m_postfix;
+	return os;
   }
   
   //  File& operator=(const File& file) {  }
