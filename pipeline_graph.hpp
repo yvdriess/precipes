@@ -34,7 +34,6 @@
 //#include <boost/graph/subgraph.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <boost/graph/adj_list_serialize.hpp>
-#include "subgraph_serialize.h"
 #include <boost/serialization/string.hpp>
 //#include <string>
 #include <boost/serialization/unordered_map.hpp>
