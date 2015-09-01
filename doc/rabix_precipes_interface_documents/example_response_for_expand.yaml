@@ -1,0 +1,3 @@
+arguments: [bwa, mem, /path/to/reference.fa]
+stdin: /path/to/reads.fq  # Can be null
+stdout: aligned.sam       # Can be null

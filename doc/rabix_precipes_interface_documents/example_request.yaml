@@ -1,0 +1,11 @@
+tool_cfg: {}                 # The JSON object attached to stage during workflow creation
+input_map:
+  input1: "string_value"
+  input2: {"class": "File", "path": "/path/to/file.ext"}
+  input3: [{"class": "File", "path": "/path/to/file.ext"}, {"class": "File", "path": "/path/to/file.ext"}]
+context:
+  cpu: 3                     # Three cores allocated
+  mem: 1024                  # One GB of RAM allocated
+job_dir: "/path/to/job/dir"  # Only used for get_outputs call.
+exit_code: 1                 # Only used for get_outputs call.
+  

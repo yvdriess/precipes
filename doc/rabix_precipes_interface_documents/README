@@ -1,0 +1,4 @@
+These files were the basis of the Precipes<->Rabix interface established at the BOSC15 Codefest.
+rabix_http.py -- (older version, update available in precipes dir) run webserver in background with python rabix_http.py
+cwl_linker.py -- preprocesses given cwl files to create a cleaned up json format of the given CWL workflow, precipes needs this json as input
+

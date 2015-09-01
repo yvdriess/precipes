@@ -1,0 +1,5 @@
+status: SUCCESS   # Or FAILED or RETRY
+outputs:
+  output1: "string_value"
+  output2: {"class": "File", "path": "/path/to/file.ext"}
+  output3: [{"class": "File", "path": "/path/to/file.ext"}, {"class": "File", "path": "/path/to/file.ext"}]

@@ -1,0 +1,121 @@
+{
+	"inputs": [
+    {
+      "type": "File", 
+      "id": "#input", 
+      "description": "The input file to be processed."
+    }, 
+    {
+      "default": true, 
+      "type": "boolean", 
+      "id": "#reverse_sort", 
+      "description": "If true, reverse (descending) sort"
+    }
+  ], 
+  "requirements": [
+    {
+      "dockerPull": "debian:8", 
+      "class": "DockerRequirement"
+    }
+  ], 
+  "description": "Reverse the lines in a document, then sort those lines.", 
+  "outputs": [
+    {
+      "source": "#sorted.output", 
+      "type": "File", 
+      "id": "#output", 
+      "description": "The output with the lines reversed and sorted."
+    }
+  ], 
+  "steps": [
+    {
+      "inputs": [
+        {
+          "source": "#input", 
+          "id": "#rev.input"
+        }
+      ],
+	  "id" : "#rev",
+      "run": {
+        "id": "reverse",
+		"inputs": [
+          {
+            "inputBinding": {}, 
+            "type": "File", 
+            "id": "#input"
+          }
+        ],
+        "description": "Reverse each line using the `rev` command", 
+        "stdout": "output.txt", 
+        "outputs": [
+          {
+            "outputBinding": {
+              "glob": "output.txt"
+            }, 
+            "type": "File", 
+            "id": "#output"
+          }
+        ], 
+        "baseCommand": "rev", 
+        "class": "CommandLineTool"
+      },
+      "outputs": [
+        {
+          "id": "#rev.output"
+        }
+      ]
+    }, 
+    {
+      "inputs": [
+        {
+          "source": "#rev.output", 
+          "id": "#sorted.input"
+        }, 
+        {
+          "source": "#reverse_sort", 
+          "id": "#sorted.reverse"
+        }
+      ],
+	  "id":"#sorted",
+      "run": {
+	    "id": "sort",
+        "inputs": [
+          {
+            "inputBinding": {
+              "position": 1, 
+              "prefix": "--reverse"
+            }, 
+            "type": "boolean", 
+            "id": "#reverse"
+          }, 
+          {
+            "inputBinding": {
+              "position": 2
+            }, 
+            "type": "File", 
+            "id": "#input"
+          }
+        ], 
+        "description": "Sort lines using the `sort` command", 
+        "stdout": "output.txt", 
+        "outputs": [
+          {
+            "outputBinding": {
+              "glob": "output.txt"
+            }, 
+            "type": "File", 
+            "id": "#output"
+          }
+        ], 
+        "baseCommand": "sort", 
+        "class": "CommandLineTool"
+      }, 
+      "outputs": [
+        {
+          "id": "#sorted.output"
+        }
+      ]
+    }
+  ], 
+  "class": "Workflow"
+}
